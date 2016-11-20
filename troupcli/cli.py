@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+from cmd import Cmd
 
 from troup.node import NODE_LOCK_FILE_PATH
 
@@ -45,9 +46,53 @@ def build_parser():
   
   return parser
   
+
+class InteractiveShell(Cmd):
+  intro = 'Troup system interactive shell.\n\nType ? to list the available commands.\n'
+  file = None
+  prompt = '[unset] >> '
   
+  def complete_cmd(text, avail):
+    if not text:
+      return avail
+    else:
+      cmds = []
+      for c in avail:
+        if c.startswith(text):
+          cmds.append(c)
+      return cmds
   
+  def do_sys(self, arg):
+    """System commands.
+    """
+    print('Not available yet')
+  
+  def complete_sys(self, text, line, begidx, endidx):
+    return InteractiveShell.complete_cmd(text, ['list_nodes','list_apps'])
+  
+  def do_quit(self, arg):
+    """Quit the interactive shell
+    """
+    print('Bye')
+    return True
+  
+  def do_q(self, arg):
+    """Quit the interactive shell
+    """
+    return self.do_quit(arg)
+
+
+def start_shell(args):
+  InteractiveShell.prompt = '[localhost] >> '
+  shell = InteractiveShell()
+  shell.cmdloop()
+
 if __name__ == '__main__':
   parser = build_parser()
   args = parser.parse_args()
+  
+  
+  if not args.command:
+    start_shell(args)
+  
   
